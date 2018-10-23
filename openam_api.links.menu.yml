@@ -1,0 +1,5 @@
+openam_api.settings:
+  title: 'OpenAM API Settings'
+  description: 'Manage settings for OpenAM API.'
+  parent: system.admin_config_system
+  route_name: openam_api.settings
