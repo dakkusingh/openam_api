@@ -1,0 +1,10 @@
+openam_api.settings:
+  type: config_object
+  label: 'OpenAM API settings'
+  mapping:
+    debug_response:
+      type: boolean
+      label: 'Debug Response'
+    debug_exception:
+      type: boolean
+      label: 'Debug Exception'
