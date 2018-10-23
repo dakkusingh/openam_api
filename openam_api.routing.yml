@@ -1,0 +1,9 @@
+openam_api.settings:
+  path: '/admin/config/openam_api/settings'
+  defaults:
+    _form: '\Drupal\openam_api\Form\SettingsForm'
+    _title: 'OpenAM API Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
