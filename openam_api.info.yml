@@ -1,0 +1,5 @@
+name: 'OpenAM API'
+description: 'Integrates OpenAM API with Drupal'
+type: module
+core: 8.x
+configure: openam_api.settings
