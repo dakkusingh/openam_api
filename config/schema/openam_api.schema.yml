@@ -8,3 +8,12 @@ openam_api.settings:
     debug_exception:
       type: boolean
       label: 'Debug Exception'
+    openam_api_url:
+      type: string
+      label: 'OpenAM API Url'
+    openam_api_username:
+      type: string
+      label: 'Your OpenAM Username'
+    openam_api_password:
+      type: string
+      label: 'Your OpenAM Password'

@@ -1,2 +1,5 @@
 debug_response: FALSE
 debug_exception: FALSE
+openam_api_url: ""
+openam_api_username: ""
+openam_api_password: ""

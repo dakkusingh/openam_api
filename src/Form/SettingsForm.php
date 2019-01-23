@@ -78,13 +78,26 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('OpenAM API Settings'),
     ];
 
-    // TODO: Update these for OpenAM
-    /*$form['openam_api']['openam_api_key'] = [
-    '#type' => 'textfield',
-    '#title' => $this->t('API Token'),
-    '#description' => $this->t('The API token to use.'),
-    '#default_value' => $config->get('openam_api_key'),
-    ];*/
+    $form['openam_api']['openam_api_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OpenAM API Url'),
+      '#description' => $this->t('The OpenAM API Url to use.'),
+      '#default_value' => $config->get('openam_api_url'),
+    ];
+
+    $form['openam_api']['openam_api_username'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Your OpenAM Username'),
+      '#description' => $this->t('Your OpenAM Username.'),
+      '#default_value' => $config->get('openam_api_username'),
+    ];
+
+    $form['openam_api']['openam_api_password'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Your OpenAM Password'),
+      '#description' => $this->t('Your OpenAM Password.'),
+      '#default_value' => $config->get('openam_api_password'),
+    ];
 
     // Check for devel module.
     $devel_module_present = $this->moduleHandler->moduleExists('devel');
@@ -121,6 +134,9 @@ class SettingsForm extends ConfigFormBase {
     $this->config('openam_api.settings')
       // TODO: Update the commented out settings for OpenAM
       // ->set('openam_api_key', $form_state->getValue('openam_api_key'))
+      ->set('openam_api_key', $form_state->getValue('openam_api_url'))
+      ->set('openam_api_key', $form_state->getValue('openam_api_username'))
+      ->set('openam_api_key', $form_state->getValue('openam_api_password'))
       ->set('debug_response', $form_state->getValue('debug_response'))
       ->set('debug_exception', $form_state->getValue('debug_exception'))
       ->save();
