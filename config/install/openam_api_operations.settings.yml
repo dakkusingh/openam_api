@@ -1,0 +1,26 @@
+isValidToken:
+  http_method: 'POST'
+  uri: 'isTokenValid/sessions/{token}'
+  form_params:
+    _action: 'validate'
+  headers:
+    Content-Type: 'application/json'
+    authToken: ''
+authenticate:
+  http_method: 'POST'
+  uri: 'authenticate'
+  headers:
+    Content-Type: 'application/json'
+logout:
+  http_method: 'POST'
+  uri: 'sessions'
+  form_params:
+    _action: 'logout'
+  headers:
+    Content-Type: 'application/json'
+attributes:
+  http_method: 'GET'
+  uri: 'users/{username}'
+  headers:
+    Content-Type: 'application/json'
+    authToken: ''

@@ -2,6 +2,7 @@
 
 namespace Drupal\openam_api\Service;
 
+use Drupal\Core\Config\ConfigFactory;
 use Drupal\openam_api\Event\PostUserCreateEvent;
 use Drupal\openam_api\Event\PreUserCreateEvent;
 use Exception;
@@ -29,6 +30,13 @@ class Users {
   protected $eventDispatcher;
 
   /**
+   * An instance of Config Factory.
+   *
+   * @var \Drupal\Core\Config\Config|\Drupal\Core\Config\ImmutableConfig
+   */
+  private $config;
+
+  /**
    * Users constructor.
    *
    * @param \Drupal\openam_api\Service\OpenamApiClient $openamApiClient
@@ -36,8 +44,9 @@ class Users {
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher.
    */
-  public function __construct(OpenamApiClient $openamApiClient,
+  public function __construct(ConfigFactory $configFactory, OpenamApiClient $openamApiClient,
                               EventDispatcherInterface $eventDispatcher) {
+    $this->config = $configFactory->get('openam_api_operations.settings');
     $this->openamApiClient = $openamApiClient;
     $this->eventDispatcher = $eventDispatcher;
   }
@@ -106,6 +115,22 @@ class Users {
       return $openamUser;
     }
     catch (Exception $e) {
+      $this->openamApiClient->logError("Unable to create user", $e);
+      return FALSE;
+    }
+  }
+
+  public function isTokenValid($token, $options) {
+    try {
+      $apiOptions = $this->config->get('isValidToken');
+      //$apiOptions['headers']['token'] = $token;
+      $apiOptions['uri_template_options']['token'] = $token;
+      // Merge request options for proxy related configurations.
+      $apiOptions = array_merge_recursive($apiOptions, $options);
+      $response = $this->openamApiClient->callEndpoint($apiOptions);
+      //TODO: return response from parsed json.
+      return $response;
+    } catch (Exception $e) {
       $this->openamApiClient->logError("Unable to create user", $e);
       return FALSE;
     }

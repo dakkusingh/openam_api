@@ -4,4 +4,4 @@ services:
     arguments: ["@config.factory", "@logger.factory", "@module_handler"]
   openam_api.users:
     class: Drupal\openam_api\Service\Users
-    arguments: ["@openam_api.openam_api_client", "@event_dispatcher"]
+    arguments: ["@config.factory", "@openam_api.openam_api_client", "@event_dispatcher"]
