@@ -2,10 +2,14 @@
 
 namespace Drupal\openam_api\Service;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Config\ConfigFactory;
 use Exception;
+use Drupal\Core\Url;
+use GuzzleHttp\Client as GuzzleClient;
+use Drupal\Component\Serialization\Json;
 
 /**
  * Service class for OpenamApiClient.
@@ -34,23 +38,30 @@ class OpenamApiClient {
   private $moduleHandler;
 
   /**
+   * The guzzle client object.
+   *
+   * @var \GuzzleHttp\Client
+   */
+  private $client;
+
+  /**
    * Create the OpenAM API client.
    *
    * @param \Drupal\Core\Config\ConfigFactory $configFactory
    *   An instance of Config Factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
    *   LoggerChannelFactory.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
    */
   public function __construct(ConfigFactory $configFactory,
                               LoggerChannelFactory $loggerFactory,
-                              ModuleHandlerInterface $module_handler) {
+                              ModuleHandlerInterface $moduleHandler) {
     $this->config = $configFactory->get('openam_api.settings');
     $this->loggerFactory = $loggerFactory;
-    $this->moduleHandler = $module_handler;
+    $this->moduleHandler = $moduleHandler;
+    $this->client = new GuzzleClient();
 
-    // TODO Extend this for OpenAM Client.
   }
 
   /**
@@ -80,12 +91,104 @@ class OpenamApiClient {
   public function logError($message, Exception $e) {
     $this->debug($e, 'exception');
     $this->loggerFactory->get('openam_api')->error(
-      "@message - @exception", [
+      '@message - @exception', [
         '@message' => $message,
         // TODO Update the exception output for better readability.
         '@exception' => $e,
       ]
     );
+  }
+
+  /**
+   * Call the API endpoint based on the configurable options.
+   *
+   * @param array $options
+   *   Request options with headers and post body etc.
+   *
+   * @return mixed|\Psr\Http\Message\ResponseInterface
+   *   Guzzle response instance.
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function callEndpoint(array $options = []) {
+    $url = $this->requestUrl($options);
+    $headers = $this->generateHeadersWithOptions($options);
+    return $this->client->request($options['http_method'], $url, $headers);
+  }
+
+  /**
+   * Build the request Url based on the configurable options.
+   *
+   * @param array $options
+   *   Request options with headers and post body etc.
+   *
+   * @return \Drupal\Core\GeneratedUrl|string
+   *   Request url with replaced placeholder.
+   */
+  protected function requestUrl(array $options = []) {
+    $baseUrl = $this->config->get('openam_api_url');
+    $uri = \GuzzleHttp\uri_template($options['uri'], $options['uri_template_options']);
+    return Url::fromUri($baseUrl . $uri)->toString();
+  }
+
+  /**
+   * Replace/remove the quotes and spaces from the string.
+   *
+   * @param string $string
+   *   String to be cleaned.
+   *
+   * @return mixed
+   *   Cleaned string.
+   */
+  public function cleanSubjectId($string) {
+    $string = trim($string);
+    return str_replace([' ', '"'], ['+', ''], $string);
+  }
+
+  /**
+   * Call openAM API for data.
+   *
+   * @param array $options
+   *   for Url building.
+   *
+   * @return Guzzle\Http\Message\Response
+   *   Returns response body to be used by caller.
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function queryEndpoint(array $options = []) {
+    $responseContents = NULL;
+    try {
+      $response = $this->callEndpoint($options);
+      $responseContents = $response->getBody();
+      $responseContents = Json::decode($responseContents);
+    }
+    catch (\Exception $e) {
+      //TODO: Better handling of exception with response status codes.
+      $this->logError('Error querying the endpoint', $e);
+    }
+    return $responseContents;
+  }
+
+  /**
+   * Build an array of headers to pass to the openAM API.
+   *
+   * @param array $options
+   *   Additional options for the request.
+   *
+   * @return array
+   *   Default + additional option to be used for the request.
+   */
+  protected function generateHeadersWithOptions(array $options = []) {
+    // Prepare initial options.
+    $data = [
+      'timeout' => $this->config->get('openam_api_timeout'),
+    ];
+
+    // Merge request options.
+    $data = NestedArray::mergeDeep($data, $options);
+
+    return $data;
   }
 
 }
