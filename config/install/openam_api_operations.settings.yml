@@ -1,8 +1,6 @@
 isValidToken:
   http_method: 'POST'
-  uri: 'isTokenValid/sessions/{token}'
-  form_params:
-    _action: 'validate'
+  uri: 'sessions/{token}?_action=validate'
   headers:
     Content-Type: 'application/json'
     authToken: ''
@@ -13,9 +11,7 @@ authenticate:
     Content-Type: 'application/json'
 logout:
   http_method: 'POST'
-  uri: 'sessions'
-  form_params:
-    _action: 'logout'
+  uri: 'sessions/?_action=logout'
   headers:
     Content-Type: 'application/json'
 attributes:

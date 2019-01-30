@@ -3,3 +3,4 @@ debug_exception: FALSE
 openam_api_url: ""
 openam_api_username: ""
 openam_api_password: ""
+openam_api_timeout: 30
