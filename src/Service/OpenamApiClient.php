@@ -151,7 +151,7 @@ class OpenamApiClient {
    * @param array $options
    *   for Url building.
    *
-   * @return Guzzle\Http\Message\Response
+   * @return @return mixed|null|\Psr\Http\Message\StreamInterface
    *   Returns response body to be used by caller.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
@@ -164,7 +164,7 @@ class OpenamApiClient {
       $responseContents = Json::decode($responseContents);
     }
     catch (\Exception $e) {
-      //TODO: Better handling of exception with response status codes.
+      // TODO: Better handling of exception with response status codes.
       $this->logError('Error querying the endpoint', $e);
     }
     return $responseContents;
