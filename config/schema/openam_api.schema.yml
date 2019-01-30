@@ -17,3 +17,6 @@ openam_api.settings:
     openam_api_password:
       type: string
       label: 'Your OpenAM Password'
+    openam_api_timeout:
+      type: integer
+      label: 'Maximum allowed time to connect OpenAM server'
