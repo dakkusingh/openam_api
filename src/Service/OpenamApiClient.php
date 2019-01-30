@@ -151,7 +151,7 @@ class OpenamApiClient {
    * @param array $options
    *   for Url building.
    *
-   * @return @return mixed|null|\Psr\Http\Message\StreamInterface
+   * @return mixed|null|\Psr\Http\Message\StreamInterface
    *   Returns response body to be used by caller.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException

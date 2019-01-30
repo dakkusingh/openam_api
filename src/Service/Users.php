@@ -104,6 +104,7 @@ class Users {
    *
    * @return mixed|null|\Psr\Http\Message\StreamInterface
    *   User attributes from openAM.
+   *
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
   public function getUserData($username, $authToken, array $options = []) {
