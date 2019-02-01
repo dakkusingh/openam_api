@@ -132,4 +132,41 @@ class Users {
     return $response;
   }
 
+  /**
+   * Logs out user from openAM using authToken.
+   *
+   * @param string $authToken
+   *   Auth token to be used while loging out from openAM.
+   * @param array $options
+   *   Additional options for the guzzle request. e.g. proxy settings.
+   *
+   * @return bool|mixed|null|\Psr\Http\Message\StreamInterface
+   *   Sucess message response, if logout is successful.
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function logoutUser($authToken, array $options = []) {
+    try {
+      // Clean up the token value to handle " and +.
+      $authToken = $this->openamApiClient->cleanSubjectId($authToken);
+      $postBody = Json::encode(['_action' => 'logout']);
+
+      $requestOptions = [
+        'headers' => [
+          'authToken' => $authToken,
+        ],
+        'body' => $postBody,
+      ];
+
+      $apiOptions = $this->config->get('logout');
+      $apiOptions['uri_template_options'] = array();
+      $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions, $options);
+      return $this->openamApiClient->queryEndpoint($apiOptions);
+    }
+    catch (Exception $e) {
+      $this->openamApiClient->logError('Error loging out user', $e);
+      return FALSE;
+    }
+  }
+
 }
