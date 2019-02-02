@@ -1,7 +1,7 @@
 services:
   openam_api.openam_api_client:
     class: Drupal\openam_api\Service\OpenamApiClient
-    arguments: ["@config.factory", "@logger.factory", "@module_handler"]
+    arguments: ["@http_client_factory", "@config.factory", "@logger.factory", "@module_handler"]
   openam_api.users:
     class: Drupal\openam_api\Service\Users
     arguments: ["@config.factory", "@openam_api.openam_api_client", "@event_dispatcher"]

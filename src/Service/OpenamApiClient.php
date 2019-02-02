@@ -8,7 +8,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Config\ConfigFactory;
 use Exception;
 use Drupal\Core\Url;
-use GuzzleHttp\Client as GuzzleClient;
+use Drupal\Core\Http\ClientFactory;
 use Drupal\Component\Serialization\Json;
 
 /**
@@ -38,15 +38,17 @@ class OpenamApiClient {
   private $moduleHandler;
 
   /**
-   * The guzzle client object.
+   * The HTTP client to fetch the API data.
    *
-   * @var \GuzzleHttp\Client
+   * @var \Drupal\Core\Http\ClientFactory
    */
-  private $client;
+  private $httpClientFactory;
 
   /**
    * Create the OpenAM API client.
    *
+   * @param \Drupal\Core\Http\ClientFactory $httpClientFactory
+   *   A Guzzle client object.
    * @param \Drupal\Core\Config\ConfigFactory $configFactory
    *   An instance of Config Factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
@@ -54,13 +56,14 @@ class OpenamApiClient {
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
    */
-  public function __construct(ConfigFactory $configFactory,
+  public function __construct(ClientFactory $httpClientFactory,
+                              ConfigFactory $configFactory,
                               LoggerChannelFactory $loggerFactory,
                               ModuleHandlerInterface $moduleHandler) {
     $this->config = $configFactory->get('openam_api.settings');
     $this->loggerFactory = $loggerFactory;
     $this->moduleHandler = $moduleHandler;
-    $this->client = new GuzzleClient();
+    $this->httpClientFactory = $httpClientFactory;
 
   }
 
@@ -113,7 +116,9 @@ class OpenamApiClient {
   public function callEndpoint(array $options = []) {
     $url = $this->requestUrl($options);
     $headers = $this->generateHeadersWithOptions($options);
-    return $this->client->request($options['http_method'], $url, $headers);
+
+    $client = $this->httpClientFactory->fromOptions($headers);
+    return $client->request($options['http_method'], $url);
   }
 
   /**
