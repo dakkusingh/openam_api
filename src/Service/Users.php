@@ -102,7 +102,7 @@ class Users {
    * @param array $options
    *   Additional options for the guzzle request. e.g. proxy settings.
    *
-   * @return mixed|null|\Psr\Http\Message\StreamInterface
+   * @return array|null
    *   User attributes from openAM.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
@@ -140,7 +140,7 @@ class Users {
    * @param array $options
    *   Additional options for the guzzle request. e.g. proxy settings.
    *
-   * @return bool|mixed|null|\Psr\Http\Message\StreamInterface
+   * @return array|null
    *   Sucess message response, if logout is successful.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
@@ -159,7 +159,7 @@ class Users {
       ];
 
       $apiOptions = $this->config->get('logout');
-      $apiOptions['uri_template_options'] = array();
+      $apiOptions['uri_template_options'] = [];
       $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions, $options);
       return $this->openamApiClient->queryEndpoint($apiOptions);
     }
