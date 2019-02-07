@@ -4,7 +4,7 @@ namespace Drupal\openam_api\Service;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Config\ConfigFactory;
 use Exception;
 use Drupal\Core\Url;
@@ -26,7 +26,7 @@ class OpenamApiClient {
   /**
    * LoggerChannelFactory.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
    */
   public $loggerFactory;
 
@@ -51,14 +51,14 @@ class OpenamApiClient {
    *   A Guzzle client object.
    * @param \Drupal\Core\Config\ConfigFactory $configFactory
    *   An instance of Config Factory.
-   * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerFactory
    *   LoggerChannelFactory.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
    */
   public function __construct(ClientFactory $httpClientFactory,
                               ConfigFactory $configFactory,
-                              LoggerChannelFactory $loggerFactory,
+                              LoggerChannelFactoryInterface $loggerFactory,
                               ModuleHandlerInterface $moduleHandler) {
     $this->config = $configFactory->get('openam_api.settings');
     $this->loggerFactory = $loggerFactory;
