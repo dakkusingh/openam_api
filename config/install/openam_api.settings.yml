@@ -4,3 +4,27 @@ openam_api_url: ""
 openam_api_username: ""
 openam_api_password: ""
 openam_api_timeout: 30
+openam_api_operations:
+  isValidToken:
+    http_method: 'POST'
+    uri: 'sessions/{token}?_action=validate'
+    headers:
+      Content-Type: 'application/json'
+      authToken: ''
+  authenticate:
+    http_method: 'POST'
+    uri: 'authenticate'
+    headers:
+      Content-Type: 'application/json'
+  logout:
+    http_method: 'POST'
+    uri: 'sessions/?_action=logout'
+    headers:
+      Content-Type: 'application/json'
+      authToken: ''
+  attributes:
+    http_method: 'GET'
+    uri: 'users/{username}'
+    headers:
+      Content-Type: 'application/json'
+      authToken: ''

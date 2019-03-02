@@ -20,3 +20,84 @@ openam_api.settings:
     openam_api_timeout:
       type: integer
       label: 'Maximum allowed time to connect OpenAM server'
+openam_api_operations.settings:
+  type: config_object
+  label: 'OpenAM API operations settings'
+  mapping:
+    isValidToken:
+      type: mapping
+      label: 'Check token validity'
+      mapping:
+        http_method:
+          type: string
+          label: 'Http method'
+        uri:
+          type: string
+          label: 'Uri'
+        headers:
+          type: mapping
+          label: 'headers'
+          mapping:
+            Content-Type:
+              type: string
+              label: 'content type'
+            authToken:
+              type: string
+              label: 'authtoken'
+    authenticate:
+      type: mapping
+      label: 'Authenticate'
+      mapping:
+        http_method:
+          type: string
+          label: 'Http method'
+        uri:
+          type: string
+          label: 'Uri'
+        headers:
+          type: mapping
+          label: 'headers'
+          mapping:
+            Content-Type:
+              type: string
+              label: 'content type'
+    logout:
+      type: mapping
+      label: 'Logout'
+      mapping:
+        http_method:
+          type: string
+          label: 'Http method'
+        uri:
+          type: string
+          label: 'Uri'
+        headers:
+          type: mapping
+          label: 'headers'
+          mapping:
+            Content-Type:
+              type: string
+              label: 'content type'
+            authToken:
+              type: string
+              label: 'authtoken'
+    attributes:
+      type: mapping
+      label: 'Attributes'
+      mapping:
+        http_method:
+          type: string
+          label: 'Http method'
+        uri:
+          type: string
+          label: 'Uri'
+        headers:
+          type: mapping
+          label: 'headers'
+          mapping:
+            Content-Type:
+              type: string
+              label: 'content type'
+            authToken:
+              type: string
+              label: 'authtoken'
