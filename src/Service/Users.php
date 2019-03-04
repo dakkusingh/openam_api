@@ -30,11 +30,11 @@ class Users {
   protected $eventDispatcher;
 
   /**
-   * An instance of Config Factory.
+   * An instance of openam API operations.
    *
-   * @var \Drupal\Core\Config\Config|\Drupal\Core\Config\ImmutableConfig
+   * @var \Drupal\openam_api\Service\Users
    */
-  private $config;
+  private $openamApiOperations;
 
   /**
    * Users constructor.
