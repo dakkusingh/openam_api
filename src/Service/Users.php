@@ -32,7 +32,7 @@ class Users {
   /**
    * An instance of openam API operations.
    *
-   * @var \Drupal\openam_api\Service\Users
+   * @var array
    */
   private $openamApiOperations;
 
