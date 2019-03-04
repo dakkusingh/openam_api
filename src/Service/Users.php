@@ -50,7 +50,7 @@ class Users {
                               OpenamApiClient $openamApiClient,
                               EventDispatcherInterface $eventDispatcher) {
     $openamConfig = $configFactory->get('openam_api.settings');
-    $this->config = $openamConfig->get('openam_api_operations');
+    $this->openamApiOperations = $openamConfig->get('openam_api_operations');
     $this->openamApiClient = $openamApiClient;
     $this->eventDispatcher = $eventDispatcher;
   }
@@ -80,7 +80,7 @@ class Users {
         ],
         'body' => $postBody,
       ];
-      $apiOptions = $this->config['isValidToken'];
+      $apiOptions = $this->openamApiOperations['isValidToken'];
       $apiOptions['uri_template_options']['token'] = $authToken;
       $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions, $options);
 
@@ -119,7 +119,7 @@ class Users {
         ],
       ];
 
-      $apiOptions = $this->config['attributes'];
+      $apiOptions = $this->openamApiOperations['attributes'];
       $apiOptions['uri_template_options']['username'] = $username;
       $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions, $options);
 
@@ -158,7 +158,7 @@ class Users {
         'body' => $postBody,
       ];
 
-      $apiOptions = $this->config['logout'];
+      $apiOptions = $this->openamApiOperations['logout'];
       $apiOptions['uri_template_options'] = [];
       $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions, $options);
       return $this->openamApiClient->queryEndpoint($apiOptions);
