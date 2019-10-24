@@ -16,6 +16,8 @@ openam_api_operations:
     uri: 'authenticate'
     headers:
       Content-Type: 'application/json'
+      X-OpenAM-Username: ''
+      X-OpenAM-Password: ''
   logout:
     http_method: 'POST'
     uri: 'sessions/?_action=logout'

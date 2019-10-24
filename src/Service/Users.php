@@ -15,6 +15,9 @@ use Drupal\Component\Serialization\Json;
  */
 class Users {
 
+  const INVALID_USER_MESSAGE = "Authentication Failed";
+  const ACCOUNT_LOCKED_MESSAGE = "Your account has been locked";
+
   /**
    * OpenAM Client.
    *
@@ -89,6 +92,57 @@ class Users {
     catch (Exception $e) {
       $this->openamApiClient->logError('Error validating auth token', $e);
       return FALSE;
+    }
+  }
+
+  /**
+   * Authenticates a user with openAM.
+   *
+   * @param string $username
+   *   The username to authenticate with.
+   *
+   * @param string $password
+   *   The password for corresponding $username.
+   *
+   * @param string $realm
+   *   The domain/store to authenticate against, default Top Level Realm (/).
+   *
+   * @return string
+   *   A token if the username and password match. A string "NULL" if the
+   *   username and password match, but when the user is locked out.
+   *
+   * @throws Exception
+   *   If authentication failed. Check the message of the exception to identify
+   *   what went wrong and pass on a simple exception message which will stay
+   *   consistent between openAM versions.
+   */
+  public function authenticate($username, $password, $realm = '') {
+    try {
+      $requestOptions = [
+        'headers' => [
+          'X-OpenAM-Username' => $this->openamApiClient->base64EncodeHeader($username),
+          'X-OpenAM-Password' => $this->openamApiClient->base64EncodeHeader($password),
+        ]
+      ];
+      $apiOptions = $this->openamApiOperations['authenticate'];
+      $apiOptions['uri_template_options'] = [];
+      $apiOptions = NestedArray::mergeDeep($apiOptions, $requestOptions);
+
+      return $this->openamApiClient->queryEndpoint($apiOptions);
+    }
+    catch (\Exception $e) {
+      if (strpos($e->getMessage(), static::ACCOUNT_LOCKED_MESSAGE) !== FALSE) {
+        $this->openamApiClient->logError(static::ACCOUNT_LOCKED_MESSAGE, $e);
+        throw new Exception('locked');
+      }
+
+      if (strpos($e->getMessage(), static::INVALID_USER_MESSAGE) !== FALSE) {
+        $this->openamApiClient->logError(static::INVALID_USER_MESSAGE, $e);
+        throw new Exception('invalid');
+      }
+
+      $this->openamApiClient->logError('Error authenticating user', $e);
+      throw $e;
     }
   }
 
