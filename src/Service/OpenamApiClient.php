@@ -16,7 +16,7 @@ use Drupal\Component\Serialization\Json;
  */
 class OpenamApiClient {
 
-  const HTTP_STATUS_CODE_MESSAGES = array(
+  const HTTP_STATUS_CODE_MESSAGES = [
     400 => "400 Bad Request - The request was malformed.",
     401 => "401 Unauthorized - The request requires user authentication.",
     403 => "403 Forbidden - Access was forbidden during an operation on a resource.",
@@ -24,7 +24,7 @@ class OpenamApiClient {
     500 => "500 Internal Server Error - The server encountered an unexpected condition that prevented it from fulfilling the request.",
     501 => "501 Not Implemented - The resource does not support the functionality required to fulfill the request.",
     503 => "503 Service Unavailable - The requested resource was temporarily unavailable. The service may have been disabled, for example."
-  );
+  ];
 
   /**
    * An instance of Config Factory.
@@ -103,13 +103,15 @@ class OpenamApiClient {
    */
   public function logError($message, Exception $e) {
     $this->debug($e, 'exception');
-    $this->loggerFactory->get('openam_api')->error(
-      '@message - @exception', [
-        '@message' => $message,
-        // TODO Update the exception output for better readability.
-        '@exception' => $e,
-      ]
-    );
+    if ($this->config->get('log_exception')) {
+      $this->loggerFactory->get('openam_api')->error(
+        '@message - @exception', [
+          '@message' => $message,
+          // TODO Update the exception output for better readability.
+          '@exception' => $e,
+        ]
+      );
+    }
   }
 
   /**

@@ -66,8 +66,8 @@ class Users {
    * @param array $options
    *   Additional options for the guzzle request. e.g. proxy settings.
    *
-   * @return bool|mixed|null|\Psr\Http\Message\StreamInterface
-   *   Auth api response having user id, if token is valid.
+   * @return \Psr\Http\Message\StreamInterface
+   *   Auth api response containing user id.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
@@ -91,7 +91,7 @@ class Users {
     }
     catch (Exception $e) {
       $this->openamApiClient->logError('Error validating auth token', $e);
-      return FALSE;
+      throw $e;
     }
   }
 
@@ -107,7 +107,7 @@ class Users {
    * @param string $realm
    *   The domain/store to authenticate against, default Top Level Realm (/).
    *
-   * @return string
+   * @return \Psr\Http\Message\StreamInterface
    *   A token if the username and password match. A string "NULL" if the
    *   username and password match, but when the user is locked out.
    *
@@ -156,8 +156,8 @@ class Users {
    * @param array $options
    *   Additional options for the guzzle request. e.g. proxy settings.
    *
-   * @return array|null
-   *   User attributes from openAM.
+   * @return \Psr\Http\Message\StreamInterface
+   *   User attributes from openAM, if is successful.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
@@ -181,6 +181,7 @@ class Users {
     }
     catch (Exception $e) {
       $this->openamApiClient->logError('Error getting user attributes', $e);
+      throw $e;
     }
 
     return $response;
@@ -194,8 +195,8 @@ class Users {
    * @param array $options
    *   Additional options for the guzzle request. e.g. proxy settings.
    *
-   * @return array|null
-   *   Sucess message response, if logout is successful.
+   * @return \Psr\Http\Message\StreamInterface
+   *   Success message response, if logout is successful.
    *
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
@@ -219,7 +220,7 @@ class Users {
     }
     catch (Exception $e) {
       $this->openamApiClient->logError('Error loging out user', $e);
-      return FALSE;
+      throw $e;
     }
   }
 
