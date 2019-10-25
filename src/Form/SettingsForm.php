@@ -124,6 +124,18 @@ class SettingsForm extends ConfigFormBase {
       '#disabled' => !$devel_module_present,
     ];
 
+    $form['log'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('OpenAM API Logging'),
+    ];
+
+    $form['log']['log_exception'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Log OpenAM Exception'),
+      '#description' => $this->t('Logs OpenAM errors to the Drupal error log.'),
+      '#default_value' => $config->get('log_exception'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -139,6 +151,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('openam_api_key', $form_state->getValue('openam_api_password'))
       ->set('debug_response', $form_state->getValue('debug_response'))
       ->set('debug_exception', $form_state->getValue('debug_exception'))
+      ->set('log_exception', $form_state->getValue('log_exception'))
       ->save();
 
     parent::submitForm($form, $form_state);

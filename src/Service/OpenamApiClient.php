@@ -16,6 +16,16 @@ use Drupal\Component\Serialization\Json;
  */
 class OpenamApiClient {
 
+  const HTTP_STATUS_CODE_MESSAGES = [
+    400 => "400 Bad Request - The request was malformed.",
+    401 => "401 Unauthorized - The request requires user authentication.",
+    403 => "403 Forbidden - Access was forbidden during an operation on a resource.",
+    404 => "404 Not Found - The specified resource could not be found, perhaps because it does not exist.",
+    500 => "500 Internal Server Error - The server encountered an unexpected condition that prevented it from fulfilling the request.",
+    501 => "501 Not Implemented - The resource does not support the functionality required to fulfill the request.",
+    503 => "503 Service Unavailable - The requested resource was temporarily unavailable. The service may have been disabled, for example."
+  ];
+
   /**
    * An instance of Config Factory.
    *
@@ -93,13 +103,15 @@ class OpenamApiClient {
    */
   public function logError($message, Exception $e) {
     $this->debug($e, 'exception');
-    $this->loggerFactory->get('openam_api')->error(
-      '@message - @exception', [
-        '@message' => $message,
-        // TODO Update the exception output for better readability.
-        '@exception' => $e,
-      ]
-    );
+    if ($this->config->get('log_exception')) {
+      $this->loggerFactory->get('openam_api')->error(
+        '@message - @exception', [
+          '@message' => $message,
+          // TODO Update the exception output for better readability.
+          '@exception' => $e,
+        ]
+      );
+    }
   }
 
   /**
@@ -151,6 +163,28 @@ class OpenamApiClient {
   }
 
   /**
+   * Encode a string for MIME header.
+   *
+   * This method is used for username and password headers.
+   * HTTP headers only support ISO-8859-1 characters. Therefore OpenAM allow
+   * username and password headers to be MIME encoded.
+   *
+   * Use this method instead of mb_encode_mimeheader() as the latter can not
+   * handle large strings, it also will not encode email addresses.
+   *
+   * https://bugster.forgerock.org/jira/browse/OPENAM-3750
+   *
+   * @param string $header_value
+   *   The string to be encoded.
+   *
+   * @return string
+   *   The encoded string.
+   */
+  public function base64EncodeHeader($header_value) {
+    return '=?UTF-8?B?' . base64_encode($header_value) . '?=';
+  }
+
+  /**
    * Call openAM API for data.
    *
    * @param array $options
@@ -169,8 +203,13 @@ class OpenamApiClient {
       $responseContents = Json::decode($responseContents);
     }
     catch (\Exception $e) {
-      // TODO: Better handling of exception with response status codes.
+      if (isset(static::HTTP_STATUS_CODE_MESSAGES[$e->getCode()])) {
+        $this->logError(static::HTTP_STATUS_CODE_MESSAGES[$e->getCode()], $e);
+        throw $e;
+      }
+
       $this->logError('Error querying the endpoint', $e);
+      throw $e;
     }
     return $responseContents;
   }
